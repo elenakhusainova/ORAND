@@ -1,0 +1,3 @@
+#' TicTacToe data
+#'
+"TicTacToe"
