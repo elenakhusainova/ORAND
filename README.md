@@ -1,6 +1,12 @@
 ORAND
 ================
 
+### Introduction
+
+The package implements the Bayesian Or's of And's algorithm for Interpretable classification, created by Tong Wang, Cynthia Rudin, Finale Doshi-Velez, Yimin Liu, Erica Klampfl and Perry MacNeille ([the paper](https://pdfs.semanticscholar.org/ee43/4531203bf7609c9648f78eacf4b7ea750dd0.pdf)).
+
+The algorithm takes categorical data (might be more than two levels per variable) and a vector of binary predictions and outputs the set of patterns (rules) for positive prediction.
+
 ### To download, install and test the package run the following:
 
 ``` r
