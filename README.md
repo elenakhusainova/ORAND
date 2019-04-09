@@ -9,7 +9,7 @@ The algorithm takes categorical data (might be more than two levels per variable
 
 #### Acknowledgement
 
-The package uses code from Christian Borgelt's **fim4r** package ([link](http://www.borgelt.net/fim4r.html)).
+The package uses Christian Borgelt's implementation of FP-growth algorithm from **fim4r** package ([link](http://www.borgelt.net/fim4r.html)).
 
 ### To download, install and test the package run the following:
 
