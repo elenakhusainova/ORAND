@@ -7,6 +7,10 @@ The package implements the Bayesian Or's of And's algorithm for Interpretable cl
 
 The algorithm takes categorical data (might be more than two levels per variable) and a vector of binary predictions and outputs the set of patterns (rules) for positive prediction.
 
+##### Acknowledgement
+
+The package uses code from Christian Borgelt's **fim4r** package ([link](http://www.borgelt.net/fim4r.html)).
+
 ### To download, install and test the package run the following:
 
 ``` r
