@@ -8,6 +8,7 @@
 #' @param iter_max maximum number of iterations
 #' @param cool_rate cooling rate
 #' @param p prob of selecting a random neighbor
+#' @param metric metric to use for impurity measure of a split. Possible values: "cond.entropy", "Gini"
 #' @return vector of classes
 #'
 #' @examples
@@ -22,7 +23,8 @@
 #' @export
 
 boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
-                params, iter_max = 100, cool_rate = 10, p = 0.1) {
+                metric = "cond.entropy", params, iter_max = 100, cool_rate = 10, 
+                p = 0.1) {
   
   ########################################################################
   # ----------------------- Checking the input ------------------------- #
@@ -142,8 +144,9 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
         round(difftime(end.time, start.time, units = "min"), 4), "min \n")
     
     start.time <- Sys.time()
-    pattern_pool <- .screen_patterns(data, classes, pattern_pool,
-                                     num_pat_max = 2000) # TODO: Let the user provide num_pat_max
+    pattern_pool <- .screen_patterns(data, classes, pattern_pool, 
+                                     num_pat_max = 2000, 
+                                     metric = metric) # TODO: Let the user provide num_pat_max
     end.time <- Sys.time()
     cat("The patterns are screened! Time taken:", 
         round(difftime(end.time, start.time, units = "min"), 4), "min \n")
@@ -202,14 +205,15 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
   ##### Iterations:
   while (iter < iter_max & length(misclassified) > 0) {
     
-    # Some output:
-    if (TRUE | iter %% 10 == 0) {
-      cat("Iter ", iter, ":", sep = "")
-      cat(" ME:", round(length(misclassified) / length(classes), 3))
-      cat(" Score:",
-          .score(data, classes, curr_pattern_set, prior, params, pattern_pool),
-          "\n")
-    }
+    # Nice output:
+    pr <- round(iter*20 / iter_max) # Progress
+    smr <- 
+      paste0("ME: ", round(length(misclassified) / length(classes), 3),
+             " Score: ", round(.score(data, classes, curr_pattern_set,
+                                      prior, params, pattern_pool), 3)) # Summary of iteration
+    cat("\rProgress: |", paste0(rep("=", pr)),
+        paste0(rep(" ", 20 - pr)), "|   Iteration ", ifelse(iter < 10, " ",""),
+        iter, "/", iter_max, "  ", smr, sep = "")
     
     # Find an example of missclasified data:
     miss_ex <- classes[sample(misclassified, 1)]
@@ -241,6 +245,10 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
     
     iter <- iter + 1
     misclassified <- which(predict(curr_pattern_set, data) != classes)
+  }
+  
+  if (length(misclassified) == 0) {
+    cat("\nFound the perfect solution, stopping now!\n")
   }
   
   return(min_pattern_set)
