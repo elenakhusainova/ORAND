@@ -23,7 +23,7 @@ params <- list(max_length = 3, alpha = rep(10, 3), beta = rep(10, 3),
 df1 <- TicTacToe[, -28]
 dfClasses <- TicTacToe$outcome
 b <- boa(data = df1, classes = dfClasses, prior = "BetaBinomial",
-         method = "pattern", params, iter_max = 50, cool_rate = 1000,
-         p = 0.1)
+         method = "pattern", metric = "other", params, iter_max = 50, 
+         cool_rate = 1000, p = 0.1)
 b
 ```
