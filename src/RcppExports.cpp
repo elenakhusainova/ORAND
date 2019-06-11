@@ -5,16 +5,17 @@
 
 using namespace Rcpp;
 
-// entropies
-NumericVector entropies(DataFrame data, IntegerVector classes, List patternPool);
-RcppExport SEXP _ORAND_entropies(SEXP dataSEXP, SEXP classesSEXP, SEXP patternPoolSEXP) {
+// impurityScores
+NumericVector impurityScores(DataFrame data, IntegerVector rClasses, List patternPool, String& rMetric);
+RcppExport SEXP _ORAND_impurityScores(SEXP dataSEXP, SEXP rClassesSEXP, SEXP patternPoolSEXP, SEXP rMetricSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< DataFrame >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type classes(classesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type rClasses(rClassesSEXP);
     Rcpp::traits::input_parameter< List >::type patternPool(patternPoolSEXP);
-    rcpp_result_gen = Rcpp::wrap(entropies(data, classes, patternPool));
+    Rcpp::traits::input_parameter< String& >::type rMetric(rMetricSEXP);
+    rcpp_result_gen = Rcpp::wrap(impurityScores(data, rClasses, patternPool, rMetric));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -22,8 +23,8 @@ END_RCPP
 RcppExport SEXP f4r_fpgrowth(SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ORAND_entropies", (DL_FUNC) &_ORAND_entropies, 3},
-    {"f4r_fpgrowth",     (DL_FUNC) &f4r_fpgrowth,     4},
+    {"_ORAND_impurityScores", (DL_FUNC) &_ORAND_impurityScores, 4},
+    {"f4r_fpgrowth", (DL_FUNC) &f4r_fpgrowth, 4},
     {NULL, NULL, 0}
 };
 
