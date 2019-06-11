@@ -4,8 +4,9 @@
 \alias{boa}
 \title{Implementing the BOA algorithm with R}
 \usage{
-boa(data, classes, prior = "BetaBinomial", method = "pattern", params,
-  iter_max = 100, cool_rate = 10, p = 0.1)
+boa(data, classes, prior = "BetaBinomial", method = "pattern",
+  metric = "cond.entropy", params, iter_max = 100, cool_rate = 10,
+  p = 0.1)
 }
 \arguments{
 \item{data}{a data frame containing the variables for the model. No continuous data is allowed.}
@@ -15,6 +16,8 @@ boa(data, classes, prior = "BetaBinomial", method = "pattern", params,
 \item{prior}{prior: "BetaBinomial" or "Poisson"}
 
 \item{method}{method used for finding the minima: either "pattern" or "literal"}
+
+\item{metric}{metric to use for impurity measure of a split. Possible values: "cond.entropy", "Gini"}
 
 \item{params}{list of parameters for the model based on the choice of prior}
 

@@ -4,7 +4,7 @@
 \alias{.screen_patterns}
 \title{Auxiliary function screenPatterns (using information gain)}
 \usage{
-.screen_patterns(data, classes, pattern_pool, num_pat_max = 2000)
+.screen_patterns(data, classes, pattern_pool, num_pat_max = 2000, metric = "cond.entropy")
 }
 \arguments{
 \item{data}{a data frame containing the variables in the model}
@@ -14,6 +14,8 @@
 \item{pattern_pool}{the set of all possible patterns for \code{pattern_set} mined from the data}
 
 \item{num_pat_max}{how many patterns to keep}
+
+\item{metric}{metric to use for impurity measure of a split. Possible values: "cond.entropy", "Gini"}
 }
 \value{
 a list of all patterns in the given data, indexed by lengths
