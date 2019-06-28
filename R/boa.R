@@ -2,7 +2,7 @@
 #'
 #' @param data a data frame containing the variables for the model. No continuous data is allowed.
 #' @param classes a vector of classes (0 or 1) for the data.
-#' @param prior prior: "BetaBinomial" or "Poisson"
+#' @param prior prior: "BetaBinomial", "Poisson", "weights"
 #' @param params list of parameters for the model based on the choice of prior
 #' @param method method used for finding the minima: either "pattern" or "literal"
 #' @param iter_max maximum number of iterations
@@ -33,52 +33,52 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
   if (!class(data) == "data.frame" || 
       grepl("=", names(data)) ||
       any(is.na(data))) {
-    stop("Error in boa(): argument 'data' should be a data frame without '=' in 
+    stop("Argument 'data' should be a data frame without '=' in 
          the variable names and contain no missing values\n")
   }
   
   if (!length(classes) == nrow(data) || 
       any(is.na(as.numeric(classes))) ||
       !all(as.numeric(classes) %in% c(0,1))) {
-    stop("Error in boa(): argument 'classes' should have the same number of 
+    stop("Argument 'classes' should have the same number of 
          observations (classified as 0 or 1) as 'data' and contain no missing 
          values\n")
   }
   
-  if (!prior %in% c("BetaBinomial", "Poisson")) {
-    stop("Error in boa(): argument 'prior' should be either 'BetaBinomial'
+  if (!prior %in% c("BetaBinomial", "Poisson", "weights")) {
+    stop("Argument 'prior' should be either 'BetaBinomial'
          or 'Poisson'\n")
   }
   
   if (!method %in% c("pattern", "literal")) {
-    stop("Error in boa(): argument 'method' should be either 'pattern'
+    stop("Argument 'method' should be either 'pattern'
          or 'literal'\n")
   }
   
   if (!class(iter_max) == "numeric" ||
       !length(iter_max) == 1 ||
       iter_max < 1) {
-    stop("Error in boa(): argument 'iter_max' should be a positive integer\n")
+    stop("Argument 'iter_max' should be a positive integer\n")
   }
   
   if (!class(cool_rate) == "numeric" ||
       !length(cool_rate) == 1 ||
       cool_rate < 0) {
-    stop("Error in boa(): argument 'cool_rate' should be a positive number\n")
+    stop("Argument 'cool_rate' should be a positive number\n")
   }
   
   if (!class(p) == "numeric" ||
       !length(p) == 1 ||
       p < 0 || p > 1) {
-    stop("Error in boa(): argument 'p' should be a number between 0 and 1\n")
+    stop("Argument 'p' should be a number between 0 and 1\n")
   }
   
   if (!class(params) == "list") 
-    stop("Error in boa(): argument 'params' should be a list\n")
+    stop("Argument 'params' should be a list\n")
   if (prior == "BetaBinomial") {
     if (!all(names(params) == c("max_length", "alpha", "beta", "alpha_plus",
                                 "alpha_minus", "beta_plus", "beta_minus")))
-      stop("Error in boa(): check the names of argument 'params'\n")
+      stop("Check the names of argument 'params'\n")
     if (!class(params$max_length) == "numeric" ||
         !length(params$max_length) == 1 ||
         params$max_length < 1 || params$max_length > ncol(data) ||
@@ -100,11 +100,31 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
         
         !class(params$beta_minus) == "numeric" ||
         !length(params$beta_minus) == 1 || params$beta_minus <= 0)
-    stop("Error in boa(): check the argument 'params'\n")
-  } else {
+    stop("Check the argument 'params'\n")
+  } 
+  
+  else if (prior == "weights") {
+    if (!all(names(params) == c("max_length", "weights", "rho_plus", "rho_minus")))
+      stop("Check the names of argument 'params'\n")
+    if (!class(params$max_length) == "numeric" ||
+        !length(params$max_length) == 1 ||
+        params$max_length < 1 || params$max_length > ncol(data) ||
+        
+        !class(params$weights) == "numeric" ||
+        !length(params$weights) == params$max_length || any(params$weights < 0) ||
+        
+        !class(params$rho_plus) == "numeric" ||
+        !length(params$rho_plus) == 1 || params$rho_plus <= 0 ||
+        
+        !class(params$rho_minus) == "numeric" ||
+        !length(params$rho_minus) == 1 || params$rho_minus <= 0)
+    stop("Check the argument 'params'\n")
+  }
+  
+  else {
     if (!all(names(params) == c("lambda_m", "lambda_l", "alpha_plus",
                                 "alpha_minus", "beta_plus", "beta_minus")))
-      stop("Error in boa(): check the names of argument 'params'\n") 
+      stop("Check the names of argument 'params'\n") 
     if (!class(params$lambda_m) == "numeric" ||
         !length(params$lambda_m) == 1 || params$lambda_m < 0 ||
         
@@ -122,7 +142,7 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
         
         !class(params$beta_minus) == "numeric" ||
         !length(params$beta_minus) == 1 || params$beta_minus <= 0)
-    stop("Error in boa(): check the argument 'params'\n")
+    stop("Check the argument 'params'\n")
   }
   
   ########################################################################
@@ -151,17 +171,36 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
     cat("The patterns are screened! Time taken:", 
         round(difftime(end.time, start.time, units = "min"), 4), "min \n")
     
-    # Vector of probabilities for a pattern of each length in the pattern_pool
-    # to be included in the pattern set:
-    prob_length <- rbeta(params$max_length, params$alpha, params$beta)
-    # Sample how many patterns of certain length will be included in the
-    # pattern_set:
-    sizes <- sapply(1:min(params$max_length, length(pattern_pool)), 
-                    function(l) {rbinom(1, length(pattern_pool[[l]]), 
-                                        prob_length[l])})
-    # Get the pattern_set:
-    pattern_set <- lapply(1:min(params$max_length, length(pattern_pool)), 
-                          function(l) {sample(pattern_pool[[l]], sizes[l])})
+    # Initial pattern set: 
+    this <- sample(1:length(pattern_pool), 1, prob = lengths(pattern_pool))
+    pattern_set <- list()
+    pattern_set[[this]] <- sample(pattern_pool[[this]], 1)
+  }
+  
+  else if (prior == "weights") {
+    
+    # Mining and screening the patterns: we mine all patterns from the 
+    # positively classified observations with lengths less than max_length and
+    # with small conditional entropy:
+    start.time <- Sys.time()
+    pattern_pool <- .mine_patterns(data[classes == 1, ], 
+                                   max_length = params$max_length)
+    end.time <- Sys.time()
+    cat("The patterns are mined! Time taken:", 
+        round(difftime(end.time, start.time, units = "min"), 4), "min \n")
+    
+    start.time <- Sys.time()
+    pattern_pool <- .screen_patterns(data, classes, pattern_pool, 
+                                     num_pat_max = 2000, 
+                                     metric = metric) # TODO: Let the user provide num_pat_max
+    end.time <- Sys.time()
+    cat("The patterns are screened! Time taken:", 
+        round(difftime(end.time, start.time, units = "min"), 4), "min \n")
+    
+    # Initial pattern set:
+    this <- sample(1:length(pattern_pool), 1, prob = lengths(pattern_pool))
+    pattern_set <- list()
+    pattern_set[[this]] <- sample(pattern_pool[[this]], 1)
   }
   
   else if (prior == "Poisson") {
@@ -191,9 +230,6 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
   
   ##### Prepare for the while loop:
   iter <- 0
-  this <- sample(1:length(pattern_pool), 1, prob = lengths(pattern_pool))
-  pattern_set <- list()
-  pattern_set[[this]] <- sample(pattern_pool[[this]], 1)
   curr_pattern_set <- pattern_set
   # For keeping track of the best pattern_set we seen:
   min_pattern_set <- pattern_set
