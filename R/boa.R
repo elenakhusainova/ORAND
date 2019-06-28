@@ -17,8 +17,8 @@
 #' df <- TicTacToe[, -28]
 #' dfClasses <- TicTacToe$outcome
 #' b <- boa(data = df, classes = dfClasses, prior = "BetaBinomial", 
-#'          method = "pattern", params, iter_max = 50, cool_rate = 1000, 
-#'          p = 0.1)
+#'          method = "pattern", metric = "cond.entropy", params, iter_max = 50, 
+#'          cool_rate = 1000, p = 0.1)
 #' b
 #' @export
 
