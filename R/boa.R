@@ -18,18 +18,17 @@
 #' dfClasses <- TicTacToe$outcome
 #' b <- boa(data = df, classes = dfClasses, prior = "BetaBinomial", 
 #'          method = "pattern", metric = "cond.entropy", params, iter_max = 50, 
-#'          cool_rate = 1000, p = 0.1)
+#'          cool_rate, p = 0.1)
 #' b
 #' @export
 
 boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
-                metric = "cond.entropy", params, iter_max = 100, cool_rate = 10, 
-                p = 0.1) {
+                metric = "cond.entropy", params, iter_max = 100, 
+                cool_rate, p = 0.1) {
   
   ########################################################################
   # ----------------------- Checking the input ------------------------- #
   ########################################################################
-  
   if (!class(data) == "data.frame" || 
       grepl("=", names(data)) ||
       any(is.na(data))) {
@@ -60,11 +59,13 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
       iter_max < 1) {
     stop("Argument 'iter_max' should be a positive integer\n")
   }
-  
-  if (!class(cool_rate) == "numeric" ||
-      !length(cool_rate) == 1 ||
-      cool_rate < 0) {
+
+  if (!missing(cool_rate)) {
+    if (!class(cool_rate) == "numeric" ||
+       !length(cool_rate) == 1 ||
+       cool_rate < 0) {
     stop("Argument 'cool_rate' should be a positive number\n")
+    }
   }
   
   if (!class(p) == "numeric" ||
@@ -237,6 +238,33 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
   class(min_pattern_set) <- "boa"
   # Find the missclassified by the current pattern set observations:
   misclassified <- which(predict(curr_pattern_set, data) != classes)
+  
+  ##### Cooling rate:
+  avgs <- rep(NA, 20)
+  if (missing(cool_rate)) {
+    for (i in 1:10) {
+      new_pattern_set <- .cover_more(curr_pattern_set, method, 1, data, 
+                                     classes, prior, params, pattern_pool)
+      avgs[i] <- 
+        .score(data, classes, new_pattern_set, prior, params, pattern_pool) -
+        .score(data, classes, curr_pattern_set, prior, params, pattern_pool)
+      curr_pattern_set <- new_pattern_set
+    }
+    for (i in 11:20) {
+      new_pattern_set <- .cover_less(curr_pattern_set, method, 1, data, 
+                                     classes, prior, params, pattern_pool)
+      avgs[i] <- 
+        .score(data, classes, new_pattern_set, prior, params, pattern_pool) -
+        .score(data, classes, curr_pattern_set, prior, params, pattern_pool)
+      curr_pattern_set <- new_pattern_set
+    }
+    
+    curr_pattern_set <- pattern_set
+    class(curr_pattern_set) <- "boa"
+    cool_rate <- abs(mean(avgs) / log(0.8)) + 0.0001 # to avoid 0
+    cat("Cooling rate is:", cool_rate, "\n")
+  }
+  
   
   ##### Iterations:
   while (iter < iter_max & length(misclassified) > 0) {
