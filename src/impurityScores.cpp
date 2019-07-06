@@ -20,6 +20,10 @@
 *  or for just two classes:
 *    gini(Y|X) = 2TP*FP/n(TP+FP) + 2FN*TN/n(FN+TN)
 * The lower the gini index the better the pattern is in separating the data.
+* 
+* For metric = "Fscore" :
+*    F_b(Y|X) = (1+b^2) * precision * recall / (b^2 * precision + recall)
+* The higher the F-score the better the pattern is in separating the data.
 ******************************************************************************/
 
 #include <Rcpp.h>
@@ -50,6 +54,8 @@ double measure(std::vector<int>& cPrediction,
   } else if (rMetric == "Gini") {
     if (cTP+cFP) cOut += (cTP*cFP) / (cTP+cFP);
     if (cTN+cFN) cOut += (cFN*cTN) / (cTN+cFN);
+  } else if (rMetric == "Fscore") {
+    cOut = - cTP / (0.1 * (cTP + cFN) + (cTP + cFP)) ;
   } else {
     cOut = - cTP / (pow(cTP+cFN, 0.1) * pow(cTP+cFP, 0.9));
   }
