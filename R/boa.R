@@ -261,7 +261,8 @@ boa <- function(data, classes, prior = "BetaBinomial", method = "pattern",
     
     curr_pattern_set <- pattern_set
     class(curr_pattern_set) <- "boa"
-    cool_rate <- abs(mean(avgs) / log(0.8)) + 0.0001 # to avoid 0
+    cool_rate <- abs(mean(avgs) / log(0.8)) # to avoid 0
+    if (cool_rate < 1) cool_rate <- 10
     cat("Cooling rate is:", cool_rate, "\n")
   }
   
