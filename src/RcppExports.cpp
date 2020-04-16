@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // impurityScores
 NumericVector impurityScores(DataFrame data, IntegerVector rClasses, List patternPool, String& rMetric);
-RcppExport SEXP _SOAR_impurityScores(SEXP dataSEXP, SEXP rClassesSEXP, SEXP patternPoolSEXP, SEXP rMetricSEXP) {
+RcppExport SEXP _ORAND_impurityScores(SEXP dataSEXP, SEXP rClassesSEXP, SEXP patternPoolSEXP, SEXP rMetricSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,12 +23,12 @@ END_RCPP
 RcppExport SEXP f4r_fpgrowth(SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SOAR_impurityScores", (DL_FUNC) &_SOAR_impurityScores, 4},
+    {"_ORAND_impurityScores", (DL_FUNC) &_ORAND_impurityScores, 4},
     {"f4r_fpgrowth", (DL_FUNC) &f4r_fpgrowth, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_SOAR(DllInfo *dll) {
+RcppExport void R_init_ORAND(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

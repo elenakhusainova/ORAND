@@ -9,6 +9,6 @@
 NULL
 
 impurityScores <- function(data, rClasses, patternPool, rMetric) {
-    .Call('_SOAR_impurityScores', PACKAGE = 'SOAR', data, rClasses, patternPool, rMetric)
+    .Call('_ORAND_impurityScores', PACKAGE = 'ORAND', data, rClasses, patternPool, rMetric)
 }
 

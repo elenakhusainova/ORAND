@@ -4,24 +4,16 @@
 \alias{boa}
 \title{Implementing the BOA algorithm with R}
 \usage{
-boa(
-  data,
-  classes,
-  prior = "BetaBinomial",
-  method = "pattern",
-  metric = "cond.entropy",
-  params,
-  iter_max = 100,
-  cool_rate,
-  p = 0.1
-)
+boa(data, classes, prior = "BetaBinomial", method = "pattern",
+  metric = "cond.entropy", params, iter_max = 100, cool_rate = 10,
+  p = 0.1)
 }
 \arguments{
 \item{data}{a data frame containing the variables for the model. No continuous data is allowed.}
 
 \item{classes}{a vector of classes (0 or 1) for the data.}
 
-\item{prior}{prior: "BetaBinomial", "Poisson", "weights"}
+\item{prior}{prior: "BetaBinomial" or "Poisson"}
 
 \item{method}{method used for finding the minima: either "pattern" or "literal"}
 
@@ -47,7 +39,7 @@ params <- list(max_length = 3, alpha = rep(10, 3), beta = rep(10, 3),
 df <- TicTacToe[, -28]
 dfClasses <- TicTacToe$outcome
 b <- boa(data = df, classes = dfClasses, prior = "BetaBinomial", 
-         method = "pattern", metric = "cond.entropy", params, iter_max = 50, 
-         cool_rate, p = 0.1)
+         method = "pattern", params, iter_max = 50, cool_rate = 1000, 
+         p = 0.1)
 b
 }
