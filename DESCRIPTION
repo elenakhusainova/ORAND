@@ -1,4 +1,4 @@
-Package: ORAND
+Package: SOAR
 Type: Package
 Title: Implementing Or's of And's algorithm
 Version: 0.1.0
@@ -11,7 +11,7 @@ Description: Implementing Or's of And's algorithm from the paper:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 7.0.2
 Imports: stats,
     methods,
     arules,
@@ -20,4 +20,3 @@ LinkingTo: Rcpp
 Depends: R (>= 3.1)
 NeedsCompilation: yes
 URL: https://github.com/elenakhusainova/ORAND
-

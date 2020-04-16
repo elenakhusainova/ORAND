@@ -1,4 +1,4 @@
-ORAND
+SOAR
 ================
 
 ### Introduction
@@ -15,8 +15,8 @@ The package uses Christian Borgelt's implementation of FP-growth algorithm from 
 
 ``` r
 library(devtools)
-install_github("elenakhusainova/ORAND")
-library(ORAND)
+install_github("elenakhusainova/SOAR")
+library(SOAR)
 
 params <- list(max_length = 3, alpha = rep(10, 3), beta = rep(10, 3),
          alpha_plus = 500, alpha_minus = 500, beta_plus = 1, beta_minus = 1)
